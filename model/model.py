@@ -18,3 +18,7 @@ def predict(img):
     s = detector.predict(im)
     print(s)
     return s
+
+
+predict('1.jpg')
+

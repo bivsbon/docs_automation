@@ -39,9 +39,9 @@ def main():
         for image in os.path.join(img_dir, mapping[0]):
             fields = get_fields(mode, image)
 
-            for i in range(crit_cols):
+            for col in range(crit_cols):
                 for i in range(2, sheet.max_row + 1):
-                    cell = sheet.cell(row=i, column=crit_cols[i])
+                    cell = sheet.cell(row=i, column=crit_cols[col])
                     if different(str(cell.value), fields[i]):
                         # Fill the value in
                         cell.value = fields[i]
