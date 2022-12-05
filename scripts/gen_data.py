@@ -22,7 +22,7 @@ def gen(file_index):
     print(file_name + (' %.2f file/s' % speed))
 
 
-executor = ThreadPoolExecutor(max_workers=4)
+executor = ThreadPoolExecutor(max_workers=5)
 
 for i in range(1, 300):
     executor.submit(gen, i)

@@ -37,7 +37,3 @@ class ImgProcessingModule:
         ymax = int(data['ymax'][i])
 
         return img[ymin:ymax, xmin: xmax]
-
-
-module = ImgProcessingModule()
-module.get_fields('../img_kh/2.jpg')
