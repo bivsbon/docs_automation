@@ -16,7 +16,7 @@ def convert_all(path):
 
         for i in range(len(images)):
             # Save pages as images in the pdf
-            images[i].save('img_kh\\' + str(counter) + '.jpg', 'JPEG')
+            images[i].save('img\\' + str(counter) + '.jpg', 'JPEG')
             print(counter)
             counter += 1
 

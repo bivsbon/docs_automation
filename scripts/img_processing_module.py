@@ -3,8 +3,11 @@ import torch
 
 
 class ImgProcessingModule:
-    def __init__(self):
-        self.model = torch.hub.load('WongKinYiu/yolov7', 'custom', 'best.pt')
+    def __init__(self, mode):
+        mode_map = {
+            1: 'best.pt'
+        }
+        self.model = torch.hub.load('WongKinYiu/yolov7', 'custom', mode_map[mode])
         self.model.conf = 0.3
 
     def get_fields(self, path_img):
@@ -19,11 +22,8 @@ class ImgProcessingModule:
             ymin = int(data['ymin'][i])
             xmax = int(data['xmax'][i])
             ymax = int(data['ymax'][i])
-            cv2.rectangle(img, (xmin, ymin), (xmax, ymax), (255, 0, 0), thickness=5)
+            # image = cv2.rectangle(img, (xmin, ymin), (xmax, ymax), (255, 0, 0), thickness=5)
             list_img.append(img[ymin:ymax, xmin: xmax])
-        cv2.imshow('img', img)
-        cv2.waitKey(0)
-
         return list_img
 
     def get_fields_index(self, path_img, i):
@@ -37,3 +37,7 @@ class ImgProcessingModule:
         ymax = int(data['ymax'][i])
 
         return img[ymin:ymax, xmin: xmax]
+
+
+module = ImgProcessingModule(1)
+print(len(module.get_fields('test_img/5.jpg')))
