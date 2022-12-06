@@ -3,8 +3,11 @@ import torch
 
 
 class ImgProcessingModule:
-    def __init__(self):
-        self.model = torch.hub.load('WongKinYiu/yolov7', 'custom', 'best.pt')
+    def __init__(self, mode):
+        mode_map = {
+            1: 'best.pt'
+        }
+        self.model = torch.hub.load('WongKinYiu/yolov7', 'custom', mode_map[mode])
         self.model.conf = 0.3
 
     def get_fields(self, path_img):
@@ -34,4 +37,3 @@ class ImgProcessingModule:
         ymax = int(data['ymax'][i])
 
         return img[ymin:ymax, xmin: xmax]
-
