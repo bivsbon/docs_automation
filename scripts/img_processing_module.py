@@ -5,7 +5,9 @@ import torch
 class ImgProcessingModule:
     def __init__(self, mode):
         mode_map = {
-            1: 'best.pt'
+            1: '../weights2/kh.pt',
+            2: '../weights2/hn.pt',
+            3: '../weights2/ks.pt'
         }
         self.model = torch.hub.load('WongKinYiu/yolov7', 'custom', mode_map[mode])
         self.model.conf = 0.3
@@ -22,8 +24,30 @@ class ImgProcessingModule:
             ymin = int(data['ymin'][i])
             xmax = int(data['xmax'][i])
             ymax = int(data['ymax'][i])
-            # image = cv2.rectangle(img, (xmin, ymin), (xmax, ymax), (255, 0, 0), thickness=5)
+            image = cv2.rectangle(img, (xmin, ymin), (xmax, ymax), (255, 0, 0), thickness=5)
             list_img.append(img[ymin:ymax, xmin: xmax])
+        cv2.imshow('img', img)
+        cv2.waitKey(0)
+        return list_img
+
+    def get_fields_test(self, path_img):
+        "Lay 4 truong thong tin tu anh"
+        img = cv2.imread(path_img)
+        results = self.model(img[:, :, ::-1])
+        data = results.pandas().xyxy[0]
+        data = data.sort_values(by=['class']).reset_index(drop=True)
+        list_img = []
+        for i in range(len(data)):
+            xmin = int(data['xmin'][i])
+            ymin = int(data['ymin'][i])
+            xmax = int(data['xmax'][i])
+            ymax = int(data['ymax'][i])
+            image = cv2.rectangle(img, (xmin, ymin), (xmax, ymax), (255, 0, 0), thickness=5)
+            list_img.append(img[ymin:ymax, xmin: xmax])
+            # cv2.imshow('img', img[ymin:ymax, xmin: xmax])
+            # cv2.waitKey(0)
+        cv2.imshow('img', img)
+        cv2.waitKey(0)
         return list_img
 
     def get_fields_index(self, path_img, i):
@@ -39,5 +63,5 @@ class ImgProcessingModule:
         return img[ymin:ymax, xmin: xmax]
 
 
-module = ImgProcessingModule(1)
-print(len(module.get_fields('test_img/5.jpg')))
+module = ImgProcessingModule(2)
+module.get_fields_test("4.jpg")
