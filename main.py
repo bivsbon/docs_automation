@@ -6,6 +6,7 @@ from img_processing_module import ImgProcessingModule
 from file_mapper import get_mappings
 from model.model import TextRecognizer
 from openpyxl.styles import PatternFill
+from no_accent_vietnamese import convert
 
 crit_cols_conf = {
     1: [[16, 27], [17, 28]]
@@ -41,6 +42,7 @@ def process_img(img_dir, i, sheet, mode, img_module, recognizers):
     global field_col_maps
     crit_cols = crit_cols_conf[mode]
     field_col_map = field_col_maps[mode]
+    result = []
 
     img_path = f'{img_dir}\\{i - 1}.jpg'
     fields = img_module.get_fields(img_path)
@@ -57,14 +59,18 @@ def process_img(img_dir, i, sheet, mode, img_module, recognizers):
 
                 # Check if prediction is the same as value in Excel
                 # if different(str(cell.value), prediction):
-                if prediction != str(cell.value):
+                if convert(prediction) != convert(str(cell.value)):
+                    result.append([cell, prediction])
                     # Fill the value in color that cell yellow
-                    fill_value_in(cell, prediction, sheet.max_row)
-                else:
-                    print(f'skip{cell.row-1}/{sheet.max_row-1}')
+                    # fill_value_in(cell, prediction, sheet.max_row)
+
+                # else:
+                #     print(f'skip{cell.row-1}/{sheet.max_row-1}')
     else:
         # TODO: Field detection error
         print(f"Field detection error at index {i}")
+
+    return result
 
 
 def main():
@@ -88,11 +94,18 @@ def main():
         max_row = sheet.max_row
         img_dir2 = os.path.join(img_dir, mapping[0])
         executor = ThreadPoolExecutor(max_workers=5)
+        futures = []
 
         # Loop through sheet rows and images
         # for i in range(2, 7):
         for i in range(2, sheet.max_row + 1):
-            executor.submit(process_img, img_dir2, i, sheet, mode, img_module, recognizers)
+            future = executor.submit(process_img, img_dir2, i, sheet, mode, img_module, recognizers)
+            futures.append(future)
+
+        for future in futures:
+            result = future.result()
+            for insert in result:
+                fill_value_in(insert[0], insert[1], sheet.max_row)
 
         wb.save("modified.xlsx")
 

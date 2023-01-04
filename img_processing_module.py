@@ -5,7 +5,7 @@ import torch
 class ImgProcessingModule:
     def __init__(self, mode):
         mode_map = {
-            1: 'best.pt'
+            1: 'weights2/kh.pt'
         }
         self.model = torch.hub.load('WongKinYiu/yolov7', 'custom', mode_map[mode])
         self.model.conf = 0.3
